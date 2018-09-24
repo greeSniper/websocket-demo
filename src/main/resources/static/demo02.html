@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>netty webSocket demo</title>
+</head>
+<body>
+<form onsubmit="return false;">
+    <input type="text" name="message" value="Hello World!"><input
+        type="button" value="发送消息"
+        onclick="send(this.form.message.value)">
+    <h3>输出：</h3>
+    <textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
+    <input type="button" onclick="javascript:document.getElementById('responseText').value=''" value="清空">
+</form>
+<script type="text/javascript">
+    var socket;
+    if (!window.WebSocket) {
+        window.WebSocket = window.MozWebSocket;
+    }
+    if (window.WebSocket) {
+        socket = new WebSocket("ws://localhost:2048/ws");
+        socket.onmessage = function (event) {
+            var ta = document.getElementById('responseText');
+            ta.value = ta.value=='' ? event.data : ta.value + '\n' + event.data;
+        };
+        socket.onopen = function (event) {
+            console.log("连接开启");
+        };
+        socket.onclose = function (event) {
+            console.log("连接关闭");
+        };
+    } else {
+        console.log("你的浏览器不支持！");
+    }
+
+    function send(message) {
+        if (!window.WebSocket) {
+            return;
+        }
+        if (socket.readyState == WebSocket.OPEN) {
+            socket.send(message);
+        } else {
+            console.log("连接没有开启.");
+        }
+    }
+
+    setInterval(function () {
+        send("1001");
+        send("1002");
+        send("1003");
+        send("1004");
+    }, 4000);
+</script>
+</body>
+</html>
